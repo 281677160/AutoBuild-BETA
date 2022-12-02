@@ -203,7 +203,7 @@ jobs:
       if: github.event.inputs.CACHE_ACCELERATE == 'true'
       uses: klever1988/cachewrtbuild@main
       with:
-        clean: true
+        ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Run Diy Scripts

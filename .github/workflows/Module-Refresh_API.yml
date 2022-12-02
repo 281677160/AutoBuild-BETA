@@ -32,11 +32,11 @@ jobs:
       run: |
         wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
         
-    - name: Upload API to Github Release
-      uses: svenstaro/upload-release-action@v2
+    - name: Upload API to Github Release 
+      uses: ncipollo/release-action@main
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ./API
-        file_glob: true
+        name: AutoUpdate
         tag: AutoUpdate
-        overwrite: true
+        token: ${{ secrets.REPO_TOKEN }}
+        artifacts: ./API
+        allowUpdates: true

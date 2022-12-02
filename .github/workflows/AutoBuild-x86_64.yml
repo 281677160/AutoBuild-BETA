@@ -14,12 +14,12 @@ on:
       DEFAULT_SOURCE:
         description: '编译源码'
         required: false
-        default: 'coolsnowwolf/lede:master'
+        default: '大雕:master'
         type: choice
         options:
-          - 'coolsnowwolf/lede:master'
-          - 'immortalwrt/immortalwrt:openwrt-21.02'
-          - 'openwrt/openwrt:openwrt-22.03'
+          - '大雕:master'
+          - '天灵:21.02'
+          - '官方:22.03'
       Tempoary_CONFIG:
         description: '配置文件'
         required: false
@@ -107,39 +107,18 @@ jobs:
 
     - name: Load Custom Variables
       run: |
-        if [ -n "${{ github.event.inputs.Tempoary_CONFIG }}" ]
-        then
-            if [ -f "$GITHUB_WORKSPACE/Configs/${{ github.event.inputs.Tempoary_CONFIG }}" ]
-            then
-                CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}
-            else
-                CONFIG_FILE=${{ env.CONFIG_FILE }}
-            fi
-        else
-            CONFIG_FILE=${{ env.CONFIG_FILE }}
+        if [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕:master' ]]; then
+          echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
+          echo "REPO_BRANCH=master" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕:master' ]]; then
+          echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕:master' ]]; then
+          echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=openwrt-22.03" >> $GITHUB_ENV
         fi
-        if [ ! -f "$GITHUB_WORKSPACE/Configs/$CONFIG_FILE" ]
-        then
-            echo "CONFIG_FILE: [/Config/$CONFIG_FILE] is not detected ..."
-            exit 1
-        else
-            echo "CONFIG_FILE: [/Config/$CONFIG_FILE]"
-            echo "CONFIG_FILE=$CONFIG_FILE" >> $GITHUB_ENV
-        fi
-        if [ -n "${{ github.event.inputs.Tempoary_IP }}" ]
-        then
-            echo "IP: [${{ github.event.inputs.Tempoary_IP }}]"
-            echo "Tempoary_IP=${{ github.event.inputs.Tempoary_IP }}" >> $GITHUB_ENV
-        fi
-        if [ -n "${{ github.event.inputs.Tempoary_FLAG }}" ]
-        then
-            echo "FLAG: [${{ github.event.inputs.Tempoary_FLAG }}]"
-            echo "Tempoary_FLAG=${{ github.event.inputs.Tempoary_FLAG }}" >> $GITHUB_ENV
-        fi
-        REPO_URL="https://github.com/$(cut -d \: -f 1 <<< ${{ github.event.inputs.DEFAULT_SOURCE }})"
-        REPO_BRANCH=$(cut -d \: -f 2 <<< ${{ github.event.inputs.DEFAULT_SOURCE }})
-        echo "REPO_URL=$REPO_URL" >> $GITHUB_ENV
-        echo "REPO_BRANCH=$REPO_BRANCH" >> $GITHUB_ENV
+        echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
+        echo "Tempoary_FLAG=${{ github.event.inputs.Tempoary_FLAG }}" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
 

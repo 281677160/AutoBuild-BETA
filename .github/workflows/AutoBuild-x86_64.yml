@@ -36,7 +36,7 @@ on:
           - 'Full'
           - 'AP'
       Tempoary_IP:
-        description: '固件 IP 地址 [可选]'
+        description: '固件IP地址 [选填]'
         default: ''
       UPLOAD_RELEASES:
         description: '上传固件到 Github Releases'
@@ -154,6 +154,7 @@ jobs:
         sudo chown $USER:$GROUPS /workdir
         if [ "${{ github.event.inputs.DELETE_USELESS_FILES }}" == true ]
         then
+            echo "正在删除无用东西"
             docker rmi $(docker images -q)
             sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php
             sudo -E apt-get -y autoremove --purge

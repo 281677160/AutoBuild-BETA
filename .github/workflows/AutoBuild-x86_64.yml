@@ -172,16 +172,6 @@ jobs:
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
-        
-    - name: Accelerate
-      if: github.event.inputs.CACHE_ACCELERATE == 'true'
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: false
-        toolchain: true
-        skip: true
-        clean: true
-        prefix: ${{ github.workspace }}/openwrt
 
     - name: Initialize Environment
       env:
@@ -208,6 +198,16 @@ jobs:
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        
+    - name: Accelerate
+      if: github.event.inputs.CACHE_ACCELERATE == 'true'
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: false
+        toolchain: true
+        skip: true
+        clean: true
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: Run Diy Scripts
       run: |
@@ -251,20 +251,20 @@ jobs:
 
     - name: Upload Firmware to Artifacts
       uses: actions/upload-artifact@main
-      if: ${{ github.event.inputs.UPLOAD_ARTIFACTS }} == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
+      if: github.event.inputs.UPLOAD_ARTIFACTS == 'true' && steps.compile.outcome == 'success' && !cancelled()
       with:
         name: ${{ env.CONFIG_FILE }}_firmware_${{ env.Compile_Date }}
         path: openwrt/bin/Firmware
 
     - name: Upload bin to Artifacts
       uses: actions/upload-artifact@main
-      if: ${{ github.event.inputs.UPLOAD_BIN_ARTIFACTS }} == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
+      if: github.event.inputs.UPLOAD_BIN_ARTIFACTS == 'true' && steps.compile.outcome == 'success' && !cancelled()
       with:
         name: ${{ env.CONFIG_FILE }}_bin_${{ env.Compile_Date }}
         path: openwrt/bin
 
     - name: Upload Firmware to Release
-      if: ${{ github.event.inputs.UPLOAD_RELEASES }} == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
+      if: github.event.inputs.UPLOAD_RELEASES == 'true' && steps.compile.outcome == 'success' && !cancelled()
       uses: ncipollo/release-action@main
       with:
         name: AutoUpdate
@@ -274,12 +274,12 @@ jobs:
         allowUpdates: true
         
     - name: Download Github API
-      if: ${{ github.event.inputs.UPLOAD_RELEASES }} == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
+      if: github.event.inputs.UPLOAD_RELEASES == 'true' && steps.compile.outcome == 'success' && !cancelled()
       run: |
         wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
 
     - name: Upload API to Github Release 
-      if: ${{ github.event.inputs.UPLOAD_RELEASES }} == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
+      if: github.event.inputs.UPLOAD_RELEASES == 'true' && steps.compile.outcome == 'success' && !cancelled()
       uses: ncipollo/release-action@main
       with:
         name: AutoUpdate

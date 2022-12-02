@@ -208,7 +208,7 @@ jobs:
       with:
         name: AutoUpdate
         tag: AutoUpdate
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.REPO_TOKEN }}
         artifacts: openwrt/bin/Firmware/*
         allowUpdates: true
         
@@ -223,14 +223,14 @@ jobs:
       with:
         name: AutoUpdate
         tag: AutoUpdate
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.REPO_TOKEN }}
         artifacts: ./API
         allowUpdates: true
 
     - name: Delete old Workflow Runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
           retain_days: 1
           keep_minimum_runs: 3

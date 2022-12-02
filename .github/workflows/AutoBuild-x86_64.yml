@@ -176,13 +176,13 @@ jobs:
         make download -j8
 
     - name: Build OpenWrt
+      id: compile
       run: |
         cd openwrt
         make -j4 || make -j1 V=s
-        [ "$?" == 0 ] && echo "Compile_Result=true" >> $GITHUB_ENV || echo "Compile_Result=false" >> $GITHUB_ENV
 
     - name: Checkout Firmware
-      if: env.Compile_Result == 'true' && !cancelled()
+      if: ${{steps.compile.outcome}} == 'success' && !cancelled()
       run: |
         cd openwrt
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
@@ -190,20 +190,20 @@ jobs:
 
     - name: Upload Firmware to Artifacts
       uses: actions/upload-artifact@main
-      if: env.UPLOAD_ARTIFACTS == 'true' && env.Compile_Result == 'true' && !cancelled()
+      if: env.UPLOAD_ARTIFACTS == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
       with:
         name: ${{ env.CONFIG_FILE }}_firmware_${{ env.Compile_Date }}
         path: openwrt/bin/Firmware
 
     - name: Upload bin to Artifacts
       uses: actions/upload-artifact@main
-      if: env.UPLOAD_BIN_ARTIFACTS == 'true' && env.Compile_Result == 'true' && !cancelled()
+      if: env.UPLOAD_BIN_ARTIFACTS == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
       with:
         name: ${{ env.CONFIG_FILE }}_bin_${{ env.Compile_Date }}
         path: openwrt/bin
 
     - name: Upload Firmware to Release
-      if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
+      if: env.UPLOAD_RELEASES == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
       uses: ncipollo/release-action@main
       with:
         name: AutoUpdate
@@ -213,12 +213,12 @@ jobs:
         allowUpdates: true
         
     - name: Download Github API
-      if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
+      if: env.UPLOAD_RELEASES == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
       run: |
         wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
 
     - name: Upload API to Github Release 
-      if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
+      if: env.UPLOAD_RELEASES == 'true' && ${{steps.compile.outcome}} == 'success' && !cancelled()
       uses: ncipollo/release-action@main
       with:
         name: AutoUpdate

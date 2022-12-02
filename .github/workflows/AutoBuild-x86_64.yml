@@ -61,7 +61,7 @@ on:
       DELETE_USELESS_FILES:
         description: '删除无用文件以增加编译空间'
         required: false
-        default: 'false'
+        default: 'true'
         type: boolean
       DELETE_OLD_WORKFLOW:
         description: '删除早期的 workflow 任务'

@@ -203,9 +203,7 @@ jobs:
       if: github.event.inputs.CACHE_ACCELERATE == 'true'
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: false
-        toolchain: true
-        skip: true
+        ccache: 'true'
         clean: true
         prefix: ${{ github.workspace }}/openwrt
 

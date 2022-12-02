@@ -11,9 +11,6 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      Tempoary_IP:
-        description: '固件 IP 地址 [可选]'
-        default: ''
       DEFAULT_SOURCE:
         description: '编译源码'
         required: false
@@ -38,6 +35,9 @@ on:
         options:
           - 'Full'
           - 'AP'
+      Tempoary_IP:
+        description: '固件 IP 地址 [可选]'
+        default: ''
       UPLOAD_RELEASES:
         description: '上传固件到 Github Releases'
         required: false

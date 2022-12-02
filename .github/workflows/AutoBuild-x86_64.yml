@@ -19,8 +19,16 @@ on:
         options:
           - '大雕-master'
           - '天灵-21.02'
+          - '天灵-18.06-k5.4'
+          - '天灵-18.06'
+          - '天灵-master'
+          - 'Lienol-21.02'
           - 'Lienol-19.07'
+          - 'Lienol-master'
           - '官方-22.03'
+          - '官方-21.02'
+          - '官方-19.07'
+          - '官方-master'
       Tempoary_CONFIG:
         description: '配置文件'
         required: false
@@ -29,6 +37,8 @@ on:
         options:
           - 'x86_64'
           - 'x86_64-AP'
+          - '自定1'
+          - '自定2'
       Tempoary_FLAG:
         description: '固件标签'
         default: 'Full'
@@ -114,12 +124,38 @@ jobs:
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-21.02' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-18.06-k5.4' ]]; then
+          echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=openwrt-18.06-k5.4" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-18.06' ]]; then
+          echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=openwrt-18.06" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-master' ]]; then
+          echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=master" >> $GITHUB_ENV
+          
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-21.02' ]]; then
+          echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=21.02" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-19.07' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=19.07" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-master' ]]; then
+          echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=master" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-22.03' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-22.03" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-21.02' ]]; then
+          echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-19.07' ]]; then
+          echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=openwrt-19.07" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-master' ]]; then
+          echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
+          echo "REPO_BRANCH=master" >> $GITHUB_ENV
         fi
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "Tempoary_FLAG=${{ github.event.inputs.Tempoary_FLAG }}" >> $GITHUB_ENV

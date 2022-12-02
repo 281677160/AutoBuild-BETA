@@ -17,7 +17,7 @@ on:
         default: '大雕:lede'
         type: choice
         options:
-          - '大雕-master'
+          - '大雕:lede'
           - '天灵-21.02'
           - '天灵-18.06-k5.4'
           - '天灵-18.06'

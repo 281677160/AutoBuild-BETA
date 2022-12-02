@@ -110,10 +110,10 @@ jobs:
         if [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕:master' ]]; then
           echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
-        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕:master' ]]; then
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵:21.02' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
-        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕:master' ]]; then
+        elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方:22.03' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-22.03" >> $GITHUB_ENV
         fi

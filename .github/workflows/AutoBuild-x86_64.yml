@@ -14,7 +14,7 @@ on:
       DEFAULT_SOURCE:
         description: '编译源码'
         required: false
-        default: '大雕:master'
+        default: '大雕:lede'
         type: choice
         options:
           - '大雕-master'
@@ -118,7 +118,7 @@ jobs:
 
     - name: Load Custom Variables
       run: |
-        if [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕-master' ]]; then
+        if [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕-lede' ]]; then
           echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-21.02' ]]; then

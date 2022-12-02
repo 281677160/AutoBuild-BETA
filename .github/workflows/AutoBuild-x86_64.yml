@@ -42,50 +42,32 @@ on:
         description: '上传固件到 Github Releases'
         required: false
         default: 'true'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
+        type: boolean
       UPLOAD_ARTIFACTS:
         description: '上传固件到 Github Artifacts'
         required: false
         default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
+        type: boolean
       UPLOAD_BIN_ARTIFACTS:
         description: '上传 bin 文件夹到 Github Artifacts'
         required: false
         default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
+        type: boolean
       CACHE_ACCELERATE:
         description: 'Cache 加速编译'
         required: false
         default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true' 
+        type: boolean
       DELETE_USELESS_FILES:
         description: '删除无用文件以增加编译空间'
         required: false
-        default: 'true'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
+        default: 'false'
+        type: boolean
       DELETE_OLD_WORKFLOW:
         description: '删除早期的 workflow 任务'
         required: false
         default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true' 
+        type: boolean
           
           
 ### 控制部分结束 ( 以上内容请保持不变 )

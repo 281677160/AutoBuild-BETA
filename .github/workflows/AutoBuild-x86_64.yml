@@ -172,6 +172,16 @@ jobs:
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
+        
+    - name: Accelerate
+      if: github.event.inputs.CACHE_ACCELERATE == 'true'
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: false
+        toolchain: true
+        skip: true
+        clean: true
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: Initialize Environment
       env:
@@ -198,16 +208,6 @@ jobs:
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-
-    - name: Accelerate
-      if: ${{ github.event.inputs.CACHE_ACCELERATE }} == 'true'
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: false
-        toolchain: true
-        skip: true
-        clean: true
-        prefix: ${{ github.workspace }}/openwrt
 
     - name: Run Diy Scripts
       run: |

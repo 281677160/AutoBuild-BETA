@@ -76,7 +76,7 @@ on:
         default: 'true'
         type: boolean
       DELETE_OLD_WORKFLOW:
-        description: '删除3天之前的所以运行任务'
+        description: '删除3天之前的所有Actions任务'
         required: false
         default: 'false'
         type: boolean

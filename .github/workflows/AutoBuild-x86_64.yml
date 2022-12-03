@@ -113,39 +113,51 @@ jobs:
         if [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕-lede' ]]; then
           echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
+          echo "WORK_DIR=DD180686" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-21.02' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
+          echo "WORK_DIR=TL210286" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-18.06-k5.4' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-18.06-k5.4" >> $GITHUB_ENV
+          echo "WORK_DIR=TL1806K86" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-18.06' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-18.06" >> $GITHUB_ENV
+          echo "WORK_DIR=TL180686" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-master' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
+          echo "WORK_DIR=TLMASTER86" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-21.02' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=21.02" >> $GITHUB_ENV
+          echo "WORK_DIR=LI210286" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-19.07' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=19.07" >> $GITHUB_ENV
+          echo "WORK_DIR=LI190786" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-master' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
+          echo "WORK_DIR=LIMASTER86" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-22.03' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-22.03" >> $GITHUB_ENV
+          echo "WORK_DIR=GF220386" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-21.02' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
+          echo "WORK_DIR=GF210286" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-19.07' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-19.07" >> $GITHUB_ENV
+          echo "WORK_DIR=GF190786" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-master' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
+          echo "WORK_DIR=GFMASTER86" >> $GITHUB_ENV
         fi
         
         if [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '高大全(Full)' ]]; then
@@ -222,18 +234,17 @@ jobs:
         libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
         mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils \
         rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        sudo timedatectl set-timezone "Asia/Shanghai"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc /swapfile
+        if [[ "${{ github.event.inputs.DELETE_USELESS_FILES }}" == 'true' ]]; then
+          echo "正在删除无用东西"
+          docker rmi `docker images -q`
+          sudo -E apt-get -qq remove -y --purge azure-cli ghc* zulu* llvm* firefox google* powershell openjdk* msodbcsql17 mongodb* moby* snapd* mysql*
+        fi
         sudo -E apt-get -qq -y autoremove --purge
         sudo -E apt-get -qq clean
-        if [ "${{ github.event.inputs.DELETE_USELESS_FILES }}" == true ]
-        then
-            echo "正在删除无用东西"
-            docker rmi `docker images -q`
-            sudo -E apt-get -qq remove -y --purge azure-cli ghc* zulu* llvm* firefox google* powershell openjdk* msodbcsql17 mongodb* moby* snapd* mysql*
-        fi
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo mkdir -p /${{ env.WORK_DIR }}
+        sudo chown $USER:$GROUPS /${{ env.WORK_DIR }}
         
     - name: CPU检测
       run: |

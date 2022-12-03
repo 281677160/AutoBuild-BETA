@@ -82,7 +82,7 @@ on:
         default: 'false'
         type: boolean
       DELETE_OLD_RELEASES:
-        description: '删除3天之前的所有Actions任务'
+        description: '删除所有RELEASES(发布)'
         required: false
         default: 'false'
         type: boolean

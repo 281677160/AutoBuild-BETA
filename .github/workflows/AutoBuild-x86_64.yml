@@ -186,7 +186,7 @@ jobs:
         Tempoary_IP: 192.168.1.1
         # 上传固件到 releasea
         UPLOAD_RELEASES: true
-        # Cache 加速编译
+        # 上传固件到 Github Artifacts
         UPLOAD_ARTIFACTS: false
         # 上传 bin 文件夹到 Github Artifacts
         UPLOAD_BIN_ARTIFACTS: false

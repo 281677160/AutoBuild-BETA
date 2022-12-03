@@ -303,7 +303,7 @@ jobs:
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
         rm -f .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
-        if [ "${{ github.event.inputs.CACHE_ACCELERATE }}" == true ]
+        if [ "${{ env.CACHE_ACCELERATE }}" == true ]
         then
             echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/openwrt/.config
         fi

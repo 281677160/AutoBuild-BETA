@@ -299,7 +299,7 @@ jobs:
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
         
         # 以上步骤完成对源码的所有修改,包括增加插件什么的,全在上面执行好,但是就是不能对 openwrt/.config 文件修改,因为这里还没产生.config文件
-        # 不管是针对源码还是分支,都可以从上面第一次运行变量步骤得到的变量进行针对性投放,针对源码和分支,不管他是x86的、r2s的、还是其他也好,全部修改好
+        # 不管是针对源码还是分支,都可以从上面第一次运行变量步骤得到的变量进行针对性投放,针对源码和分支,不管他是x86的、r2s的、还是其他也好,全部在AutoBuild_DiyScript.sh修改好
         
         cd $GITHUB_WORKSPACE/openwrt
         ./scripts/feeds update -a

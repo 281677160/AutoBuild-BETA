@@ -159,7 +159,7 @@ jobs:
           echo "Tempoary_IP=${{ github.event.inputs.Tempoary_IP }}" >> $GITHUB_ENV
         fi
         
-        if [[ -n "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
+        if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
           echo "SSH_ACTIONS=true" >> $GITHUB_ENV
         fi
         

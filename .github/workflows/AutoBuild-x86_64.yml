@@ -309,6 +309,7 @@ jobs:
         # 其实这个步骤应该放在 Pre-download Libraries 步骤之后才正确的
         
         make defconfig
+        echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${CONFIG_TEMP})" >> ${GITHUB_ENV}
         
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
         Firmware_Diy_Before
@@ -321,7 +322,7 @@ jobs:
       uses: stupidloud/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'x86'
+        mixkey: "${{ env.TARGET_BOARD }}"
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Pre-download Libraries

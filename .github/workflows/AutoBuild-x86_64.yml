@@ -344,6 +344,16 @@ jobs:
       run: |
         cd openwrt
         make -j$(nproc) || make -j1 V=s
+        
+    - name: delete older releases
+      if: env.DELETE_OLD_RELEASES == 'true' && steps.compile.outcome == 'success' && !cancelled()
+      uses: danshui-git/delete-older-releases@main
+      with:
+        repo: ${{ github.repository }}
+        keep_latest: 0
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
 
     - name: Checkout Firmware
       if: steps.compile.outcome == 'success' && !cancelled()
@@ -390,16 +400,6 @@ jobs:
         token: ${{ secrets.REPO_TOKEN }}
         artifacts: ./API
         allowUpdates: true
-        
-    - name: delete older releases
-      if: env.DELETE_OLD_RELEASES == 'true' && !cancelled()
-      uses: danshui-git/delete-older-releases@main
-      with:
-        repo: ${{ github.repository }}
-        keep_latest: 0
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
 
     - name: Delete old Workflow Runs
       continue-on-error: true

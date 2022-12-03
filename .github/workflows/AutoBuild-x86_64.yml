@@ -96,16 +96,11 @@ on:
   #schedule:
   #  - cron: 0 8 * * 5
 
-  #watch:
-  #  types: [started]
-
 jobs:
-  Compile:
+  build:
+    name: 编译 x86_64
     runs-on: ubuntu-20.04
-    permissions:
-      issues: write
-      pull-requests: write
-      contents: write
+    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
 
     steps:
     - name: Checkout

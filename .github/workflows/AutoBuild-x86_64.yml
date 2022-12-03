@@ -296,23 +296,22 @@ jobs:
         df -h
         chmod +x Scripts/AutoBuild_*.sh
         cd openwrt
-        if [ "${{ github.event.inputs.CACHE_ACCELERATE }}" == true ]
-        then
-            echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/Configs/$CONFIG_FILE
-        fi
-        cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
-        make defconfig
         Firmware_Diy_Before
-        rm -f .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
         Firmware_Diy_Main
         Firmware_Diy
         Firmware_Diy_Other
         
         cd $GITHUB_WORKSPACE/openwrt
         ./scripts/feeds update -a
+        ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
+        rm -f .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
+        if [ "${{ github.event.inputs.CACHE_ACCELERATE }}" == true ]
+        then
+            echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/openwrt/.config
+        fi
         
     - name: Accelerate
       if: github.event.inputs.CACHE_ACCELERATE == 'true'

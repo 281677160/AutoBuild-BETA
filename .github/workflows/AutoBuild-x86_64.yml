@@ -86,11 +86,12 @@ on:
         required: false
         default: 'false'
         type: boolean
-    
+        
+  schedule:
+  - cron: 58 5 * * *
+  
 env:
   UPLOAD_BIN_ARTIFACTS: false
-  #schedule:
-  #  - cron: 0 8 * * 5
 
 jobs:
   Compile:

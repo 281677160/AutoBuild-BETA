@@ -165,20 +165,20 @@ jobs:
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
         
         if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
-          echo "SSH_ACTIONS=true" >> $GITHUB_ENV
+          echo "TIMED_TRIGGER=true" >> $GITHUB_ENV
         fi
         
         ### 控制部分结束 ( 以上内容请保持不变,除非您知道您在干什么 )
 
     - name: 以下为定时触发编译手动修改变量
-      if: env.SSH_ACTIONS == 'true'
+      if: env.TIMED_TRIGGER == 'true'
       env:
         # 源码仓库链接
         REPO_URL: https://github.com/coolsnowwolf/lede
         # 源码仓库分支
         REPO_BRANCH: master
         # 配置文件名称
-        Tempoary_CONFIG: x86_64
+        CONFIG_FILE: x86_64
         # 固件标签
         Tempoary_FLAG: Full
         # 固件IP（openwrt后台地址）

@@ -87,7 +87,7 @@ on:
         type: boolean
         
   schedule:
-  - cron: 59 7 * * *
+  - cron: 15 8 * * *
   
 env:
 # 上传 bin 文件夹到 Github Artifacts
@@ -201,7 +201,7 @@ jobs:
       run: |
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
         echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
-        echo "Tempoary_CONFIG=${Tempoary_CONFIG}" >> $GITHUB_ENV
+        echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
         echo "Tempoary_FLAG=${Tempoary_FLAG}" >> $GITHUB_ENV
         echo "Tempoary_IP=${Tempoary_IP}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASES=${UPLOAD_RELEASES}" >> $GITHUB_ENV
@@ -284,14 +284,14 @@ jobs:
         cd openwrt
         if [ "${{ github.event.inputs.CACHE_ACCELERATE }}" == true ]
         then
-            echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/Configs/${{ env.CONFIG_FILE }}
+            echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/Configs/$CONFIG_FILE
         fi
         cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
         make defconfig
         Firmware_Diy_Before
-        rm -f .config && cp $GITHUB_WORKSPACE/Configs/${{ env.CONFIG_FILE }} .config
+        rm -f .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
         Firmware_Diy_Main
         Firmware_Diy
         Firmware_Diy_Other

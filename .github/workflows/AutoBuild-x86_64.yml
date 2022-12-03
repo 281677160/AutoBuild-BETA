@@ -197,7 +197,7 @@ jobs:
         # 删除所有RELEASES(发布)
         DELETE_OLD_RELEASES: false
         # Cache 加速编译
-        CACHE_ACCELERATE: false
+        CACHE_ACCELERATE: true
       run: |
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
         echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV

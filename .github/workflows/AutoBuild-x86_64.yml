@@ -281,16 +281,7 @@ jobs:
         token: ${{ secrets.REPO_TOKEN }}
         artifacts: ./API
         allowUpdates: true
-
-    - name: Delete old Workflow Runs
-      if: github.event.inputs.DELETE_OLD_WORKFLOW == 'true' && !cancelled()
-      uses: Mattraks/delete-workflow-runs@v2
-      with:
-          token: ${{ secrets.REPO_TOKEN }}
-          repository: ${{ github.repository }}
-          retain_days: 3
-          keep_minimum_runs: 0
-          
+        
     - name: delete older releases
       if: github.event.inputs.DELETE_OLD_RELEASES == 'true' && !cancelled()
       uses: danshui-git/delete-older-releases@main
@@ -300,3 +291,13 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+
+    - name: Delete old Workflow Runs
+      continue-on-error: true
+      if: github.event.inputs.DELETE_OLD_WORKFLOW == 'true' && !cancelled()
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 3
+          keep_minimum_runs: 0

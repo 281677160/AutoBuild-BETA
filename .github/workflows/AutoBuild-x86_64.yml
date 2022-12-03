@@ -196,6 +196,8 @@ jobs:
         DELETE_OLD_RELEASES: false
         # Cache 加速编译
         CACHE_ACCELERATE: false
+      run: |
+        cd ${GITHUB_WORKSPACE}
 
     - name: Initialize Environment
       env:

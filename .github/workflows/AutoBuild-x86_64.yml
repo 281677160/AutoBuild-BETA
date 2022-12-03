@@ -320,7 +320,7 @@ jobs:
           fi
           cd ${WORK_DIR}
           mkdir -p ${COME_BACK}
-          echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/start
+          echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/x86
           git add .
           git commit -m "Skip_E5 ${CONFIG_FILE}"
           git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main

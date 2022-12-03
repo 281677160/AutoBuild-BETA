@@ -174,9 +174,6 @@ jobs:
         echo "DELETE_USELESS_FILES=${{ github.event.inputs.DELETE_USELESS_FILES }}" >> $GITHUB_ENV
         echo "DELETE_OLD_WORKFLOW=${{ github.event.inputs.DELETE_OLD_WORKFLOW }}" >> $GITHUB_ENV
         echo "CACHE_ACCELERATE=${{ github.event.inputs.CACHE_ACCELERATE }}" >> $GITHUB_ENV
-        
-        
-        
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
         
@@ -255,8 +252,8 @@ jobs:
         export cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
         echo "当前CPU型号：${cpu_model}"
         if [[ `echo "${cpu_model}" |grep -Eoc "E5"` -eq '1' ]]; then
-          git clone -b main https://github.com/${{github.repository}}.git lede
-          export yml_path="lede/.github/workflows/AutoBuild-x86_64.yml"
+          git clone -b main https://github.com/${{github.repository}}.git ${WORK_DIR}
+          export yml_path="${WORK_DIR}/.github/workflows/AutoBuild-x86_64.yml"
           export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
           export PATHS2="- '${COME_BACK}/start'"
           if [[ -n ${PATHS1} ]] && [[ -n ${PATHS2} ]]; then
@@ -265,12 +262,12 @@ jobs:
             echo "获取变量失败,请勿胡乱修改AutoBuild-x86_64.yml文件"
             exit 1
           fi
-          cd lede
+          cd ${WORK_DIR}
           mkdir -p ${COME_BACK}
           echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/start
           git add .
-          git commit -m "Skip_E5 ${{ env.CONFIG_FILE }}"
-          git push --force "https://${{ secrets.GH_TOKEN }}@github.com/${{github.repository}}" HEAD:main
+          git commit -m "Skip_E5 ${CONFIG_FILE}"
+          git push --force "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
           exit 1
         fi
 

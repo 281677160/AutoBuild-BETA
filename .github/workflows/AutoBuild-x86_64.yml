@@ -195,13 +195,6 @@ jobs:
         
         # IP，这里不用说啥了
         
-        if [[ -n "${{ github.event.inputs.SKIP_E5CPU }}" ]]; then
-          echo "CPU_PREFERRED=${{ github.event.inputs.SKIP_E5CPU }}" >> $GITHUB_ENV
-        else
-          echo "CPU_PREFERRED=true" >> $GITHUB_ENV
-        fi
-        
-        # 跳过E5的变量，有就按有的来，没有，其实就是在跳过重新编译的时候再次遇见E5，如果不是默认开启的话，就不会继续来了
         
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASES=${{ github.event.inputs.UPLOAD_RELEASES }}" >> $GITHUB_ENV
@@ -210,15 +203,21 @@ jobs:
         echo "DELETE_USELESS_FILES=${{ github.event.inputs.DELETE_USELESS_FILES }}" >> $GITHUB_ENV
         echo "DELETE_OLD_WORKFLOW=${{ github.event.inputs.DELETE_OLD_WORKFLOW }}" >> $GITHUB_ENV
         echo "CACHE_ACCELERATE=${{ github.event.inputs.CACHE_ACCELERATE }}" >> $GITHUB_ENV
+        echo "CPU_PREFERRED=${{ github.event.inputs.SKIP_E5CPU }}" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
         
         
         if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
           echo "TIMED_TRIGGER=true" >> $GITHUB_ENV
+          echo "CPU_PREFERRED=true" >> $GITHUB_ENV
         fi
         
-        # 如果有某个是空的，就不是手动触发编译了，要下面搞变量，要不然定时触发会没变量的
+        # TIMED_TRIGGER，如果有某个是空的，就不是手动触发编译了，要下面搞变量，要不然定时触发会没变量的
+        
+        # CPU_PREFERRED跳过E5的变量，有就按有的来，没有，其实就是在跳过重新编译的时候再次遇见E5，如果不是默认开启的话，就不会继续来了
+        # 定时编译的时候，如果不想触发，就把CPU_PREFERRED=true改成CPU_PREFERRED=false
+        
         
         ### 以上内容90%都可以写在AutoBuild_DiyScript.sh文件上的，这样就不会感觉.yml文件臃肿了
 
@@ -298,8 +297,8 @@ jobs:
         
         # WORK_DIR变量这里有两个，还有下载源码那里有两个，注意
         
-    - name: CPU检测
-      if: env.CPU_PREFERRED == 'true'
+    - name: CPU检测，需要密匙，没搞秘密没用
+      if: env.CPU_PREFERRED == 'true' && env.REPO_TOKEN
       run: |
         cd ${GITHUB_WORKSPACE}
         export cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`

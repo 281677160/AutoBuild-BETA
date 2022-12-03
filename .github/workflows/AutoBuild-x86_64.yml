@@ -80,6 +80,11 @@ on:
         required: false
         default: 'false'
         type: boolean
+      DELETE_OLD_RELEASES:
+        description: '删除所有 RELEASES'
+        required: false
+        default: 'false'
+        type: boolean
           
           
 ### 控制部分结束 ( 以上内容请保持不变 )
@@ -284,3 +289,13 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 1
           keep_minimum_runs: 3
+          
+    - name: delete older releases
+      if: env.REPO_TOKEN
+      uses: danshui-git/delete-older-releases@main
+      with:
+        repo: ${{ github.repository }}
+        keep_latest: 0
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}

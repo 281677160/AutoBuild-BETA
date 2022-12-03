@@ -88,7 +88,7 @@ on:
         type: boolean
         
   schedule:
-  - cron: 20 6 * * *
+  - cron: 10 7 * * *
   
 env:
   UPLOAD_BIN_ARTIFACTS: false

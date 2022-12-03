@@ -69,7 +69,7 @@ on:
       CACHE_ACCELERATE:
         description: 'Cache 加速编译'
         required: false
-        default: 'false'
+        default: 'true'
         type: boolean
       DELETE_USELESS_FILES:
         description: '删除无用文件以增加编译空间'

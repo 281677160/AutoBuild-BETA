@@ -307,7 +307,6 @@ jobs:
         # 以下步骤可以对 openwrt/.config 写入您想要写入的内容,就是别对源码进行任何修改了,也不要增加插件啥的,这个zzz-default-settings文件倒是可以改
         # 还有就是针对.config机型，制作出在线更新的文件,老大您现在的文件名叫啥我看不懂您变量了,以前就是放etc叫openwrt_info
         # 在这里还可以针对机型对OpenClash或者AdGuardHome增加内核的
-        # 其实这个步骤应该放在 Pre-download Libraries 步骤之后才正确的
         
         make defconfig
         echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> ${GITHUB_ENV}

@@ -87,7 +87,7 @@ on:
         type: boolean
         
   schedule:
-  - cron: 40 7 * * *
+  - cron: 59 7 * * *
   
 env:
 # 上传 bin 文件夹到 Github Artifacts

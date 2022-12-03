@@ -171,6 +171,7 @@ jobs:
 
     - name: 以下为定时触发编译手动修改变量
       if: env.SSH_ACTIONS == 'true'
+      run: |
       env:
         # 源码仓库链接
         REPO_URL: https://github.com/coolsnowwolf/lede
@@ -196,8 +197,6 @@ jobs:
         DELETE_OLD_RELEASES: false
         # Cache 加速编译
         CACHE_ACCELERATE: false
-      run: |
-        cd ${GITHUB_WORKSPACE}
 
     - name: Initialize Environment
       env:

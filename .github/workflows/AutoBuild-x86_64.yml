@@ -272,20 +272,12 @@ jobs:
         fi
 
     - name: Clone Openwrt Source Code
+      working-directory: /${{ env.WORK_DIR }}
       run: |
         git clone -b $REPO_BRANCH $REPO_URL openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        cd openwrt
+        ln -sf /${{ env.WORK_DIR }}/openwrt $GITHUB_WORKSPACE/openwrt
+        cd $GITHUB_WORKSPACE/openwrt
         ./scripts/feeds update -a
-        ./scripts/feeds install -a
-        
-    - name: Accelerate
-      if: github.event.inputs.CACHE_ACCELERATE == 'true'
-      uses: stupidloud/cachewrtbuild@main
-      with:
-        ccache: 'true'
-        mixkey: 'x86'
-        prefix: ${{ github.workspace }}/openwrt
 
     - name: Run Diy Scripts
       run: |
@@ -306,11 +298,22 @@ jobs:
         Firmware_Diy_Main
         Firmware_Diy
         Firmware_Diy_Other
+        
+        cd $GITHUB_WORKSPACE/openwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        
+    - name: Accelerate
+      if: github.event.inputs.CACHE_ACCELERATE == 'true'
+      uses: stupidloud/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        mixkey: 'x86'
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: Pre-download Libraries
       run: |
         cd openwrt
-        ./scripts/feeds install -a
         make defconfig
         make download -j8
 

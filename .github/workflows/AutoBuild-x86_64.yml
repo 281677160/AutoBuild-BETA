@@ -76,7 +76,7 @@ on:
         default: 'true'
         type: boolean
       DELETE_OLD_WORKFLOW:
-        description: '删除早期的 workflow 任务'
+        description: '删除3天之前的所以运行任务'
         required: false
         default: 'false'
         type: boolean
@@ -283,15 +283,16 @@ jobs:
         allowUpdates: true
 
     - name: Delete old Workflow Runs
+      if: github.event.inputs.DELETE_OLD_WORKFLOW == 'true' && !cancelled()
       uses: Mattraks/delete-workflow-runs@v2
       with:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
-          retain_days: 1
-          keep_minimum_runs: 3
+          retain_days: 3
+          keep_minimum_runs: 0
           
     - name: delete older releases
-      if: env.REPO_TOKEN
+      if: github.event.inputs.DELETE_OLD_RELEASES == 'true' && !cancelled()
       uses: danshui-git/delete-older-releases@main
       with:
         repo: ${{ github.repository }}

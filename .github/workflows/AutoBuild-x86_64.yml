@@ -309,7 +309,8 @@ jobs:
         # 其实这个步骤应该放在 Pre-download Libraries 步骤之后才正确的
         
         make defconfig
-        echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${CONFIG_TEMP})" >> ${GITHUB_ENV}
+        echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> ${GITHUB_ENV}
+        echo "TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)" >> ${GITHUB_ENV}
         
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
         Firmware_Diy_Before

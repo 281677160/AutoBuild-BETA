@@ -6,7 +6,6 @@
 
 name: x86_64
 
-### 以下内容请保持不变 ( 请修改下方的 [环境变量设置] )
 on:
   repository_dispatch:
   push:
@@ -171,7 +170,7 @@ jobs:
         
         ### 控制部分结束 ( 以上内容请保持不变,除非您知道您在干什么 )
 
-    - name: 以下为定时触发编译手动修改变量
+    - name: 以下为定时触发编译手动修改配置
       if: env.TIMED_TRIGGER == 'true'
       env:
         # 源码仓库链接
@@ -233,6 +232,31 @@ jobs:
             echo "正在删除无用东西"
             docker rmi `docker images -q`
             sudo -E apt-get -qq remove -y --purge azure-cli ghc* zulu* llvm* firefox google* powershell openjdk* msodbcsql17 mongodb* moby* snapd* mysql*
+        fi
+        
+    - name: CPU检测
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        export cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
+        echo "当前CPU型号：${cpu_model}"
+        if [[ `echo "${cpu_model}" |grep -Eoc "E5"` -eq '1' ]]; then
+          git clone -b main https://github.com/${{github.repository}}.git lede
+          export yml_path="lede/.github/workflows/build-openwrt-with-lede.yml"
+          export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
+          export PATHS2="- '${COME_BACK}/start'"
+          if [[ -n ${PATHS1} ]] && [[ -n ${PATHS2} ]]; then
+            sed -i "s?${PATHS1}?${PATHS2}?g" "${yml_path}"
+          else
+            echo "获取变量失败,请勿胡乱修改build-openwrt-with-lede.yml文件"
+            exit 1
+          fi
+          cd lede
+          mkdir -p ${COME_BACK}
+          echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/start
+          git add .
+          git commit -m "Skip_E5 build openwrt with lede"
+          git push --force "https://${{ secrets.GH_TOKEN }}@github.com/${{github.repository}}" HEAD:main
+          exit 1
         fi
 
     - name: Clone Openwrt Source Code

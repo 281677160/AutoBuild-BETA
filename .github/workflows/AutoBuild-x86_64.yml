@@ -86,11 +86,9 @@ on:
         required: false
         default: 'false'
         type: boolean
-        
+    
 env:
-# 上传 bin 文件夹到 Github Artifacts
   UPLOAD_BIN_ARTIFACTS: false
-
   #schedule:
   #  - cron: 0 8 * * 5
 
@@ -160,37 +158,44 @@ jobs:
           echo "Tempoary_IP=${{ github.event.inputs.Tempoary_IP }}" >> $GITHUB_ENV
         fi
         
+        if [[ -n "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
+          echo "SSH_ACTIONS=true" >> $GITHUB_ENV
+        fi
+        
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "DELETE_OLD_WORKFLOW=${{ github.event.inputs.DELETE_OLD_WORKFLOW }}" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
         
         ### 控制部分结束 ( 以上内容请保持不变,除非您知道您在干什么 )
-        
-        
-        ### 以下为定时触发编译手动修改变量
-        
-        # 需要定时触发编译的话，手动修改以下的源码仓库链接跟分支
-        if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
-          echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
-          echo "REPO_BRANCH=master" >> $GITHUB_ENV
-        fi
-        
-        # 需要定时触发编译的话，手动修改以下的仓库标签
-        if [[ -z "${{ github.event.inputs.Tempoary_FLAG }}" ]]; then
-          echo "Tempoary_FLAG=Full" >> $GITHUB_ENV
-        fi
-        
-        # 需要定时触发编译的话，手动修改以下固件IP（openwrt的后台）
-        if [[ -z "${{ github.event.inputs.Tempoary_IP }}" ]]; then
-          echo "Tempoary_IP=192.168.1.1" >> $GITHUB_ENV
-        fi
-        
-        # 需要定时触发编译的话，删除3天之前的所有Actions任务（false为关闭，true为开启）
-        if [[ -z "${{ github.event.inputs.DELETE_OLD_WORKFLOW }}" ]]; then
-          echo "DELETE_OLD_WORKFLOW=true" >> $GITHUB_ENV
-        fi
-        
+
+    - name: 以下为定时触发编译手动修改变量
+      if: env.SSH_ACTIONS == 'true'
+      env:
+        # 源码仓库链接
+        REPO_URL: https://github.com/coolsnowwolf/lede
+        # 源码仓库分支
+        REPO_BRANCH: master
+        # 配置文件名称
+        Tempoary_CONFIG: x86_64
+        # 固件标签
+        Tempoary_FLAG: Full
+        # 固件IP（openwrt后台地址）
+        Tempoary_IP: 192.168.1.1
+        # 上传固件到 releasea
+        UPLOAD_RELEASES: true
+        # Cache 加速编译
+        UPLOAD_ARTIFACTS: false
+        # 上传 bin 文件夹到 Github Artifacts
+        UPLOAD_BIN_ARTIFACTS: false
+        # 删除无用文件以增加编译空间
+        DELETE_USELESS_FILES: true
+        # 删除3天之前的所有Actions任务
+        DELETE_OLD_WORKFLOW: false
+        # 删除所有RELEASES(发布)
+        DELETE_OLD_RELEASES: false
+        # Cache 加速编译
+        CACHE_ACCELERATE: false
 
     - name: Initialize Environment
       env:

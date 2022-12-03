@@ -86,11 +86,6 @@ on:
         required: false
         default: 'false'
         type: boolean
-      DELETE_OLD_RELEASES:
-        description: '删除所有 RELEASES'
-        required: false
-        default: 'false'
-        type: boolean
 
   #schedule:
   #  - cron: 0 8 * * 5

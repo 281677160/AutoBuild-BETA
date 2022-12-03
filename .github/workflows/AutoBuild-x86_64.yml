@@ -312,7 +312,7 @@ jobs:
           export yml_path="${WORK_DIR}/.github/workflows/AutoBuild-x86_64.yml"
           export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
           export PATHS2="- '${COME_BACK}/start'"
-          TARGET1="$(grep 'CPU_PREFERRED:' "/home/danshui/123" |sed 's/^[ ]*//g' |grep -v "^#")"
+          TARGET1="$(grep 'CPU_PREFERRED:' "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#")"
           TARGET2="CPU_PREFERRED: true"
           if [[ -n ${PATHS1} ]] && [[ -n ${PATHS2} ]]; then
             sed -i "s?${PATHS1}?${PATHS2}?g" "${yml_path}"

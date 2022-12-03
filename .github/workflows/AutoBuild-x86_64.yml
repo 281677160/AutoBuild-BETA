@@ -9,6 +9,12 @@ name: x86_64
 ### 以下内容请保持不变 ( 请修改下方的 [环境变量设置] )
 on:
   repository_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'router-config/lede-master/come-back/start'
+  
   workflow_dispatch:
     inputs:
       DEFAULT_SOURCE:

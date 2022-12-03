@@ -73,21 +73,41 @@ on:
       DELETE_USELESS_FILES:
         description: '删除无用文件以增加编译空间'
         required: false
-        default: 'true'
+        default: 'false'
         type: boolean
       DELETE_OLD_WORKFLOW:
         description: '删除3天之前的所有Actions任务'
         required: false
         default: 'false'
         type: boolean
+      SKIP_E5CPU:
+        description: '跳过E5-CPU加速编译固件'
+        required: false
+        default: 'true'
+        type: boolean
         
   schedule:
   - cron: 15 8 * * *
   
 env:
-# 上传 bin 文件夹到 Github Artifacts
+  # 上传 bin 文件夹到 Github Artifacts
   UPLOAD_BIN_ARTIFACTS: false
-  COME_BACK: Comeback/x86_64
+  
+  # 本仓库链接
+  GIT_URL: https://github.com/${{github.repository}}
+  
+  # 本仓库帐号,比如 Hyy2001X
+  GIT_ACTOR: ${{github.actor}}
+  
+  # 本仓库帐号、仓库，比如 Hyy2001X/AutoBuild-Actions-BETA,挂这里用有的,比如把很多东西写在AutoBuild_DiyScript.sh文件上有需要
+  GIT_REPOSITORY: ${{github.repository}}
+  
+  # 本仓库密匙,挂这里用有的,比如把很多东西写在AutoBuild_DiyScript.sh文件上有需要
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+  
+  # 跳过E5CPU时候要一个触发文件,随便名字
+  COME_BACK: Comeback
+  
 
 jobs:
   Compile:
@@ -155,17 +175,33 @@ jobs:
           echo "WORK_DIR=GFMASTER86" >> $GITHUB_ENV
         fi
         
+        # 上面除了区分分支跟源码链接外，还有一个WORK_DIR变量，是用来编译的时候建立文件夹用的，用来区分缓存的
+        # 每个源码每个分支都一个不一样的文件夹，比如 官方的 GF + 分支 +架构或者机型来组合（GF 2102 86），这样确保了同样源码也不会搞错了
+        # 比如说你在另外一个.yml文件还是同样的组合，然后把86换成r2或k2啥的，这样就不会造成缓存错误了
+        
         if [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '高大全(Full)' ]]; then
           echo "Tempoary_FLAG=Full" >> $GITHUB_ENV
-        elif [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '精简版(Simplify)' ]]; then
-          echo "Tempoary_FLAG=Simplify" >> $GITHUB_ENV
-        elif [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '养老版(Ultrathin)' ]]; then
-          echo "Tempoary_FLAG=Ultrathin" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '精简版(Slim)' ]]; then
+          echo "Tempoary_FLAG=Slim" >> $GITHUB_ENV
+        elif [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '养老版(Ultra)' ]]; then
+          echo "Tempoary_FLAG=Ultra" >> $GITHUB_ENV
         fi
+        
+        # 以上我胡乱写的，主要是我看不懂你的文件，跟看天书一样，你自己按您需要搞吧
         
         if [[ -n "${{ github.event.inputs.Tempoary_IP }}" ]]; then
           echo "Tempoary_IP=${{ github.event.inputs.Tempoary_IP }}" >> $GITHUB_ENV
         fi
+        
+        # IP，这里不用说啥了
+        
+        if [[ -n "${{ github.event.inputs.SKIP_E5CPU }}" ]]; then
+          echo "CPU_PREFERRED=${{ github.event.inputs.SKIP_E5CPU }}" >> $GITHUB_ENV
+        else
+          echo "CPU_PREFERRED=true" >> $GITHUB_ENV
+        fi
+        
+        # 跳过E5的变量，有就按有的来，没有，其实就是在跳过重新编译的时候再次遇见E5，如果不是默认开启的话，就不会继续来了
         
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASES=${{ github.event.inputs.UPLOAD_RELEASES }}" >> $GITHUB_ENV
@@ -177,11 +213,14 @@ jobs:
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
         
+        
         if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
           echo "TIMED_TRIGGER=true" >> $GITHUB_ENV
         fi
         
-        ### 控制部分结束 ( 以上内容请保持不变,除非您知道您在干什么 )
+        # 如果有某个是空的，就不是手动触发编译了，要下面搞变量，要不然定时触发会没变量的
+        
+        ### 以上内容90%都可以写在AutoBuild_DiyScript.sh文件上的，这样就不会感觉.yml文件臃肿了
 
     - name: 以下为定时触发编译手动修改配置
       if: env.TIMED_TRIGGER == 'true'
@@ -208,6 +247,8 @@ jobs:
         DELETE_OLD_WORKFLOW: false
         # Cache 加速编译
         CACHE_ACCELERATE: true
+        # 跳过E5-CPU加速编译固件
+        CPU_PREFERRED: true
       run: |
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
         echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
@@ -220,6 +261,7 @@ jobs:
         echo "DELETE_USELESS_FILES=${DELETE_USELESS_FILES}" >> $GITHUB_ENV
         echo "DELETE_OLD_WORKFLOW=${DELETE_OLD_WORKFLOW}" >> $GITHUB_ENV
         echo "CACHE_ACCELERATE=${CACHE_ACCELERATE}" >> $GITHUB_ENV
+        echo "CPU_PREFERRED=${CPU_PREFERRED}" >> $GITHUB_ENV
         echo "WORK_DIR=workdir" >> $GITHUB_ENV
 
     - name: Initialize Environment
@@ -233,26 +275,40 @@ jobs:
         libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
         mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils \
         rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
+        
+        # 以上抄大雕的依赖
+        
+        # 删除ubuntu的无用文件，使用了后，可用空间为48G左右（您以前那个删除代码，搞来搞去也就48G左右，还用不了下面的代码，用了也没反应）
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc /swapfile
-        if [[ "${{ env.DELETE_USELESS_FILES }}" == 'true' ]]; then
+        
+        # 再使用下面两行代码后有56G左右，一般没必要，除非编译N1固件还带打包的，就需要，主要是这个删除需要2分钟，难等，哈哈
+        if [[ "${DELETE_USELESS_FILES}" == 'true' ]]; then
           docker rmi `docker images -q`
           sudo -E apt-get -qq remove -y --purge azure-cli ghc* zulu* llvm* firefox google* powershell openjdk* msodbcsql17 mongodb* moby* snapd* mysql*
         fi
+        
+        ### 以上内容100%都可以写在AutoBuild_DiyScript.sh文件上的
+        
+        # CPU检测时候如果是E5，这两行需要用到，自动触发再次编译
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        
         sudo -E apt-get -qq -y autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "Asia/Shanghai"
         sudo mkdir -p /${{ env.WORK_DIR }}
         sudo chown $USER:$GROUPS /${{ env.WORK_DIR }}
         
+        # WORK_DIR变量这里有两个，还有下载源码那里有两个，注意
+        
     - name: CPU检测
+      if: env.CPU_PREFERRED == 'true'
       run: |
         cd ${GITHUB_WORKSPACE}
         export cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
         echo "当前CPU型号：${cpu_model}"
         if [[ `echo "${cpu_model}" |grep -Eoc "E5"` -eq '0' ]]; then
-          git clone -b main https://github.com/${{github.repository}}.git ${WORK_DIR}
+          git clone -b main https://github.com/${GIT_REPOSITORY}.git ${WORK_DIR}
           export yml_path="${WORK_DIR}/.github/workflows/AutoBuild-x86_64.yml"
           export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
           export PATHS2="- '${COME_BACK}/start'"
@@ -267,9 +323,11 @@ jobs:
           echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/start
           git add .
           git commit -m "Skip_E5 ${CONFIG_FILE}"
-          git push --force "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
+          git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
           exit 1
         fi
+        
+      ### CPU检测，以上内容100%都可以写在AutoBuild_DiyScript.sh文件上的
 
     - name: Clone Openwrt Source Code
       working-directory: /${{ env.WORK_DIR }}
@@ -278,6 +336,9 @@ jobs:
         ln -sf /${{ env.WORK_DIR }}/openwrt $GITHUB_WORKSPACE/openwrt
         cd $GITHUB_WORKSPACE/openwrt
         ./scripts/feeds update -a
+        
+        # 拉取源码这里还有两个WORK_DIR变量，拉取源码后用./scripts/feeds update -a命令后，就是完整的源码了，可以对源码进行任何修改
+        # 但是不要用 ./scripts/feeds install -a 这个命令，这个命令用了后会在package产生一个feeds的，就是有些东西都记录了，不过其实也没所谓吧
 
     - name: Run Diy Scripts
       run: |
@@ -288,18 +349,24 @@ jobs:
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
         
         # 以上步骤完成对源码的所有修改,包括增加插件什么的,全在上面执行好,但是就是不能对 openwrt/.config 文件修改,因为这里还没产生.config文件
-        # 不管是针对源码还是分支,都可以从上面第一次运行变量步骤得到的变量进行针对性投放,针对源码和分支,不管他是x86的、r2s的、还是其他也好,全部在AutoBuild_DiyScript.sh修改好
+        # 不管是针对源码还是分支,都可以从上面第一次运行变量步骤得到的变量进行针对性投放,针对源码和分支,不管他是x86的、r2s的、还是其他也好,全部用AutoBuild_DiyScript.sh修改好
         
         cd $GITHUB_WORKSPACE/openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
         
+        # 修改完所有东西后再次执行上面的两个命令，很需要的，为什么在下面还重复执行一次./scripts/feeds install -a，是因为有写插件缺依赖，或者有地方修改错误
+        # 只执行一次./scripts/feeds install -a他不显示的，再次执行就出来了
+        
+        
         rm -f .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
-        if [ "${{ env.CACHE_ACCELERATE }}" == true ]
-        then
-            echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/openwrt/.config
-        fi
+        
+        #if [ "${{ env.CACHE_ACCELERATE }}" == true ]
+        #then
+        #    echo -e "\nCONFIG_DEVEL=y\nCONFIG_CCACHE=y\n" >> $GITHUB_WORKSPACE/openwrt/.config
+        #fi
+        # 这个好像没用，我没用过，不了解什么情况
         
         # 以下步骤可以对 openwrt/.config 写入您想要写入的内容,就是别对源码进行任何修改了,也不要增加插件啥的,这个zzz-default-settings文件倒是可以改
         # 还有就是针对.config机型，制作出在线更新的文件,老大您现在的文件名叫啥我看不懂您变量了,以前就是放etc叫openwrt_info
@@ -307,7 +374,8 @@ jobs:
         
         make defconfig
         echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> ${GITHUB_ENV}
-        echo "TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)" >> ${GITHUB_ENV}
+        
+        # 执行make defconfig才能搞出TARGET_BOARD，因为下面缓存需要用到
         
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
         Firmware_Diy_Before
@@ -322,6 +390,9 @@ jobs:
         ccache: 'true'
         mixkey: "${{ env.TARGET_BOARD }}"
         prefix: ${{ github.workspace }}/openwrt
+        
+      # mixkey也挺有用的，防止那些蛋痛的人乱搞，比如我现在编译X86有缓存了，还继续用这个.yml编译，在配置文件里面改了机型，如果没mixkey区分的话，编译就错误了，因为缓存不对
+      # 其实也防止同源码多机型编译造成的缓存错误问题
 
     - name: Pre-download Libraries
       run: |

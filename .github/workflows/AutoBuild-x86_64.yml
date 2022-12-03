@@ -159,14 +159,14 @@ jobs:
           echo "Tempoary_IP=${{ github.event.inputs.Tempoary_IP }}" >> $GITHUB_ENV
         fi
         
-        if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
-          echo "SSH_ACTIONS=true" >> $GITHUB_ENV
-        fi
-        
         echo "CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}" >> $GITHUB_ENV
         echo "DELETE_OLD_WORKFLOW=${{ github.event.inputs.DELETE_OLD_WORKFLOW }}" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
+        
+        if [[ -z "${{ github.event.inputs.DEFAULT_SOURCE }}" ]]; then
+          echo "SSH_ACTIONS=true" >> $GITHUB_ENV
+        fi
         
         ### 控制部分结束 ( 以上内容请保持不变,除非您知道您在干什么 )
 

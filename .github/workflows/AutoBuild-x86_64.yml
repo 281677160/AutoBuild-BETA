@@ -92,7 +92,7 @@ on:
 env:
 # 上传 bin 文件夹到 Github Artifacts
   UPLOAD_BIN_ARTIFACTS: false
-  COME_BACK: Comeback
+  COME_BACK: Comeback/x86_64
 
 jobs:
   Compile:

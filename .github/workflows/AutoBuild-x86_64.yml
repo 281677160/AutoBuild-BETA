@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - 'Comeback/start'
+      - 'Comebac/start'
   
   workflow_dispatch:
     inputs:

@@ -324,21 +324,33 @@ jobs:
         echo "当前CPU型号：${cpu_model}"
         if [[ `echo "${cpu_model}" |grep -Eoc "E5"` -eq '1' ]]; then
           git clone -b main https://github.com/${GIT_REPOSITORY}.git ${DISTINGUISH}
+          # 如果是E5就把自己仓库下载下来
+          
           export yml_path="${DISTINGUISH}/.github/workflows/${AutoBuild_yml}"
+          # 然后是.yml路径写出来
+          
           export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
           export PATHS2="- '${COME_BACK}/${DISTINGUISH}'"
+          # 修改好触发文件，就是文件一开头那个触发，每个.yml写死也可以，就是怕人家随便改了就没效果了，所以要修改一下
+          
           if [[ -n ${PATHS1} ]] && [[ -n ${PATHS2} ]]; then
             sed -i "s?${PATHS1}?${PATHS2}?g" "${yml_path}"
           else
             echo "获取变量失败,请勿胡乱修改${AutoBuild_yml}文件"
             exit 1
           fi
+          # 替换好上面的变量
+          
           cd ${DISTINGUISH}
           mkdir -p ${COME_BACK}
           echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/${DISTINGUISH}
+          # 触发文件，每次有更改就触发，利用时分秒就最好了
+          
           git add .
           git commit -m "Skip_E5 ${CONFIG_FILE}"
           git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
+          
+          # 然后替换仓库，因为触发文件有修改，仓库就会自动再次编译了，然后下面exit 1就退出这个编译
           exit 1
         fi
         

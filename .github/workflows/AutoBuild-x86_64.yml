@@ -131,7 +131,7 @@ jobs:
         if [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '大雕-lede' ]]; then
           echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
-          echo "WORK_DIR=DD1806${{ env.DISTINGUISH }}" >> $GITHUB_ENV
+          echo "WORK_DIR=DD1806${DISTINGUISH}" >> $GITHUB_ENV
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-21.02' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
@@ -310,7 +310,7 @@ jobs:
           git clone -b main https://github.com/${GIT_REPOSITORY}.git ${WORK_DIR}
           export yml_path="${WORK_DIR}/.github/workflows/AutoBuild-x86_64.yml"
           export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-          export PATHS2="- '${COME_BACK}/start'"
+          export PATHS2="- '${COME_BACK}/${DISTINGUISH}'"
           if [[ -n ${PATHS1} ]] && [[ -n ${PATHS2} ]]; then
             sed -i "s?${PATHS1}?${PATHS2}?g" "${yml_path}"
           else
@@ -319,7 +319,7 @@ jobs:
           fi
           cd ${WORK_DIR}
           mkdir -p ${COME_BACK}
-          echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/x86
+          echo "$(date +%Y%m%d%H%M%S)" > ${COME_BACK}/${DISTINGUISH}
           git add .
           git commit -m "Skip_E5 ${CONFIG_FILE}"
           git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main

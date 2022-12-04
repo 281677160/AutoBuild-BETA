@@ -369,7 +369,7 @@ jobs:
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
         
-        # 修改完所有东西后再次执行上面的两个命令，很需要的，为什么在下面还重复执行一次./scripts/feeds install -a，是因为有写插件缺依赖，或者有地方修改错误
+        # 修改完所有东西后再次执行上面的两个命令，很需要的，为什么在下面还重复执行一次./scripts/feeds install -a，是因为有些插件缺依赖，或者有地方修改错误
         # 只执行一次./scripts/feeds install -a他不显示的，再次执行就出来了
         
         

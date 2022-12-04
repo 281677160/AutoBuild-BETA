@@ -108,7 +108,7 @@ env:
   # 跳过E5CPU时候要一个触发文件,随便名字
   COME_BACK: Comebac
   
-  # 每个.yml区分用的
+  # 每个.yml区分用的,CPU检测也用到，缓存需要用到
   DISTINGUISH: 86
   
 

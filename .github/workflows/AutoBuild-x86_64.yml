@@ -108,6 +108,8 @@ env:
   # 跳过E5CPU时候要一个触发文件,随便名字
   COME_BACK: Comeback
   
+  COME_BAC: $1
+  
 
 jobs:
   Compile:

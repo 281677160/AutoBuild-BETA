@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - 'Comebac/86'
+      - 'Comeback/86'
       
 # 上面增加了触发启动项
   

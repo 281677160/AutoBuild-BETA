@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - 'Comebac/start'
+      - 'Comebac/86'
   
   workflow_dispatch:
     inputs:

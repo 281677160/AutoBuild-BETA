@@ -111,6 +111,9 @@ env:
   # 每个.yml区分用的,CPU检测也用到，缓存需要用到
   DISTINGUISH: 86
   
+  # .yml文件名字，这样就确保如果把代码写在AutoBuild_DiyScript.sh文件的时候，一次代码全部.yml调用都没问题
+  AutoBuild_yml: AutoBuild-x86_64.yml
+  
 
 jobs:
   Compile:
@@ -132,55 +135,66 @@ jobs:
           echo "REPO_URL=https://github.com/coolsnowwolf/lede" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
           echo "WORK_DIR=DD1806${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-21.02' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
-          echo "WORK_DIR=TL210286" >> $GITHUB_ENV
+          echo "WORK_DIR=TL2102${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-18.06-k5.4' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-18.06-k5.4" >> $GITHUB_ENV
-          echo "WORK_DIR=TL1806K86" >> $GITHUB_ENV
+          echo "WORK_DIR=TL1806K${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-18.06' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-18.06" >> $GITHUB_ENV
-          echo "WORK_DIR=TL180686" >> $GITHUB_ENV
+          echo "WORK_DIR=TL1806${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '天灵-master' ]]; then
           echo "REPO_URL=https://github.com/immortalwrt/immortalwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
-          echo "WORK_DIR=TLMASTER86" >> $GITHUB_ENV
+          echo "WORK_DIR=TLMASTER${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-21.02' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=21.02" >> $GITHUB_ENV
-          echo "WORK_DIR=LI210286" >> $GITHUB_ENV
+          echo "WORK_DIR=LI2102${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-19.07' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=19.07" >> $GITHUB_ENV
-          echo "WORK_DIR=LI190786" >> $GITHUB_ENV
+          echo "WORK_DIR=LI1907${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == 'Lienol-master' ]]; then
           echo "REPO_URL=https://github.com/Lienol/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
-          echo "WORK_DIR=LIMASTER86" >> $GITHUB_ENV
+          echo "WORK_DIR=LIMASTER${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-22.03' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-22.03" >> $GITHUB_ENV
-          echo "WORK_DIR=GF220386" >> $GITHUB_ENV
+          echo "WORK_DIR=GF2203${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-21.02' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-21.02" >> $GITHUB_ENV
-          echo "WORK_DIR=GF210286" >> $GITHUB_ENV
+          echo "WORK_DIR=GF2102${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-19.07' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=openwrt-19.07" >> $GITHUB_ENV
-          echo "WORK_DIR=GF190786" >> $GITHUB_ENV
+          echo "WORK_DIR=GF1907${DISTINGUISH}" >> $GITHUB_ENV
+          
         elif [[ "${{ github.event.inputs.DEFAULT_SOURCE }}" == '官方-master' ]]; then
           echo "REPO_URL=https://github.com/openwrt/openwrt" >> $GITHUB_ENV
           echo "REPO_BRANCH=master" >> $GITHUB_ENV
-          echo "WORK_DIR=GFMASTER86" >> $GITHUB_ENV
+          echo "WORK_DIR=GFMASTER${DISTINGUISH}" >> $GITHUB_ENV
         fi
         
         # 上面除了区分分支跟源码链接外，还有一个WORK_DIR变量，是用来编译的时候建立文件夹用的，用来区分缓存的
-        # 每个源码每个分支都一个不一样的文件夹，比如 官方的 GF + 分支 +架构或者机型来组合（GF 2102 86），这样确保了同样源码也不会搞错了
-        # 比如说你在另外一个.yml文件还是同样的组合，然后把86换成r2或k2啥的，这样就不会造成缓存错误了
+        # 每个源码每个分支都一个不一样的文件夹，比如 官方的 GF + 分支 +${DISTINGUISH}来组合（GF 2102 ${DISTINGUISH}），这样确保了同样源码也不会搞错了
+        # 比如说你在另外一个.yml文件还是同样的组合，然后把${DISTINGUISH}换成r2或k2啥的，这样就不会造成缓存错误了
         
         if [[ "${{ github.event.inputs.Tempoary_FLAG }}" == '高大全(Full)' ]]; then
           echo "Tempoary_FLAG=Full" >> $GITHUB_ENV
@@ -308,13 +322,13 @@ jobs:
         echo "当前CPU型号：${cpu_model}"
         if [[ `echo "${cpu_model}" |grep -Eoc "84"` -eq '0' ]]; then
           git clone -b main https://github.com/${GIT_REPOSITORY}.git ${WORK_DIR}
-          export yml_path="${WORK_DIR}/.github/workflows/AutoBuild-x86_64.yml"
+          export yml_path="${WORK_DIR}/.github/workflows/${AutoBuild_yml}"
           export PATHS1="$(grep -Eo "\- '.*'" "${yml_path}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
           export PATHS2="- '${COME_BACK}/${DISTINGUISH}'"
           if [[ -n ${PATHS1} ]] && [[ -n ${PATHS2} ]]; then
             sed -i "s?${PATHS1}?${PATHS2}?g" "${yml_path}"
           else
-            echo "获取变量失败,请勿胡乱修改AutoBuild-x86_64.yml文件"
+            echo "获取变量失败,请勿胡乱修改${AutoBuild_yml}文件"
             exit 1
           fi
           cd ${WORK_DIR}

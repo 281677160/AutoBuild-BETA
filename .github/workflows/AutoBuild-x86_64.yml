@@ -4,7 +4,7 @@
 #   Author: Hyy2001X                                      #
 ###########################################################
 
-name: x86_64
+name: $1
 
 on:
   repository_dispatch:
@@ -106,9 +106,7 @@ env:
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   
   # 跳过E5CPU时候要一个触发文件,随便名字
-  COME_BACK: Comeback
-  
-  COME_BAC: $1
+  COME_BACK: Comebac
   
 
 jobs:
